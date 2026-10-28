@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'accounts',
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
+    "store",
 ]
 
 MIDDLEWARE = [
@@ -131,3 +132,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = "accounts.User"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

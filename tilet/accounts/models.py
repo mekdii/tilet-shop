@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import RegexValidator
 from django.db import models
+from django.conf import settings
 
 phone_validator = RegexValidator(
     r"^\+[1-9]\d{7,14}$",
@@ -39,3 +40,16 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+
+class Address(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name= "addresses" , on_delete =models.CASCADE)
+    street = models.CharField(max_length=255)
+    apartment = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=100)
+    country = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.street}, {self.city}"
+
+    
