@@ -19,5 +19,5 @@ class RegisterSerializer(serializers.ModelSerializer):
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        fields = ['street', 'apartment', 'city', 'country']
+        fields = ['id', 'street', 'apartment', 'city', 'country']
         read_only_fields = ['id']
