@@ -41,9 +41,12 @@ class ProductSerializer(serializers.ModelSerializer):
     ocasions = OcasionSerializer(many=True ,read_only=True)
     variants = ProductVariantSerializer(many=True ,read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
+    avg_rating = serializers.FloatField(read_only=True)
+    review_count = serializers.IntegerField(read_only=True)
     class Meta:
         model = Product
-        fields = ["id", "name" , "variants", "images", "description", "price" , "is_active", "category", "ocasions"]
+        fields = ["id", "name" , "variants", "images", "description", "price" , "is_active", "category", "ocasions", "avg_rating", "review_count"]
+        ordering_fields = ["price", "name", "id", "avg_rating"]
 
 
 

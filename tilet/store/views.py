@@ -7,6 +7,7 @@ from .pagination import ProductPagination
 from .filters import ProductFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
+from django.db.models import Avg, Count
 
 # Create your views here.
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
@@ -22,7 +23,10 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return (
-            Product.objects.filter(is_active = True).select_related("category").prefetch_related("variants__color", "images", "ocasions").distinct()
+            Product.objects.filter(is_active = True).select_related("category").prefetch_related("variants__color", "images", "ocasions").annotate(
+                avg_rating=Avg("reviews__rating"),
+                review_count=Count("reviews", distinct=True),
+            ).distinct()
         )
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):

@@ -11,6 +11,7 @@ from django.db.models import F
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from .services import place_order
 
 # Create your views here.
 class OrderViewSet(viewsets.ReadOnlyModelViewSet):
@@ -45,27 +46,35 @@ class CheckoutView(APIView):
         serializer = CheckoutSerializer(data= request.data, context= {"request": request})
         serializer.is_valid(raise_exception=True)
 
-        address = serializer.validated_data["address"]
-        items = serializer.validated_data["items"]
+        order = place_order(user=request.user,
+                            address=serializer.validated_data["address"],
+                            items= serializer.validated_data["items"])
 
-        with transaction.atomic():
-            order = Order.objects.create(user= request.user , address = address)
+        return Response(OrderSerializer(order).data, status= status.HTTP_201_CREATED)
 
-            ids  = sorted(item["variant"].id for item in items)
-            variants = (ProductVariant.objects.select_for_update().select_related("product").in_bulk(ids))
+        # address = serializer.validated_data["address"]
+        # items = serializer.validated_data["items"]
 
-            for item in items:
-                variant  = variants[item["variant"].id]
-                qty = item["quantity"]
-                if variant.stock < qty:
-                    raise ValidationError(f"not enough stock for {variant}. only {variant.stock} left ")
+        
 
-                variant.stock -=qty
-                variant.save(update_fields=["stock"])
+        # with transaction.atomic():
+        #     order = Order.objects.create(user= request.user , address = address)
 
-                OrderItem.objects.create(order=order, variant=variant, quantity=qty, unit_price= variant.product.price)
+        #     ids  = sorted(item["variant"].id for item in items)
+        #     variants = (ProductVariant.objects.select_for_update().select_related("product").in_bulk(ids))
 
-                return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+        #     for item in items:
+        #         variant  = variants[item["variant"].id]
+        #         qty = item["quantity"]
+        #         if variant.stock < qty:
+        #             raise ValidationError(f"not enough stock for {variant}. only {variant.stock} left ")
+
+        #         variant.stock -=qty
+        #         variant.save(update_fields=["stock"])
+
+        #         OrderItem.objects.create(order=order, variant=variant, quantity=qty, unit_price= variant.product.price)
+
+        #         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
 
 
