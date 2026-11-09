@@ -2,6 +2,8 @@
 
 from pathlib import Path
 import environ
+import os
+from decimal import Decimal
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,7 +42,8 @@ INSTALLED_APPS = [
     "orders",
     "django_filters",
     "reviews",
-    "cart"
+    "cart",
+    "payments",
 ]
 
 MIDDLEWARE = [
@@ -139,3 +142,13 @@ AUTH_USER_MODEL = "accounts.User"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+
+
+
+CHAPA_SECRET_KEY = os.environ.get("CHAPA_SECRET_KEY", "")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+ETB_PER_USD = Decimal(os.environ.get("ETB_PER_USD", "150")) 
+CHAPA_FALLBACK_EMAIL_DOMAIN = "mekdesgenetu9797@gmail.com"    # put today's real rate
