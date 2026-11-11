@@ -31,5 +31,6 @@ class AddressViewSet(viewsets.ModelViewSet):
         return Address.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        phone = serializer.validated_data.get("phone") or self.request.user.phone
+        serializer.save(user=self.request.user, phone=phone)
 

@@ -19,7 +19,7 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        return Order.objects.filter(user= self.request.user).prefetch_related("items__variant__product", "items__variant__color")
+        return Order.objects.filter(user= self.request.user).prefetch_related("shipment" ,"items__variant__product", "items__variant__color")
 
     @action(detail=True, methods=["post"])
     def cancel(self, request , pk=None):

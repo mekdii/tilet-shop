@@ -2,6 +2,8 @@ from django.db import transaction
 from .models import Order, OrderItem
 from store.models import ProductVariant
 from rest_framework.exceptions import ValidationError
+from store.models import ProductVariant
+from django.db.models import F
 
 def place_order(*, user, address, items):
     """items a list of {variant : <productVariant>, "quantity": int}"""
@@ -31,3 +33,10 @@ def place_order(*, user, address, items):
 
 
     return order
+
+
+def restore_stock(order):
+    for item in order.items.order_by("variant_id"):
+        ProductVariant.objects.filter(pk=item.variant_id).update(
+            stock= F("stock") + item.quantity
+        )

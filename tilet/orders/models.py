@@ -20,6 +20,11 @@ class Order(models.Model):
         return f"order #{self.id} - {self.user}"
 
     @property
+    def latest_shipment(self):
+        shipments = list(self.shipments.all())
+        return shipments[0] if shipments else None
+
+    @property
     def total(self):
         return sum(item.subtotal for item in self.items.all())
 

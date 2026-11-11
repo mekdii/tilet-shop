@@ -10,6 +10,8 @@ class Payment(models.Model):
         PENDING = "pending", "Pending"
         SUCCEEDED = "succeeded", "Succeeded"
         FAILED = "failed", "Failed"
+        REFUND_PENDING = "refund_pending", "Refund pending"
+        REFUNDED = "refunded", "Refunded"
 
     order = models.ForeignKey("orders.Order", on_delete=models.PROTECT, related_name="payments")
     provider = models.CharField(max_length=20, choices=Provider.choices)

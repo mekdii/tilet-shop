@@ -2,6 +2,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 from .models import User , Address
+import re
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -19,5 +20,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        fields = ['id', 'street', 'apartment', 'city', 'country']
+        fields = ['id', 'street', 'apartment', 'city', 'country', 'postal_code']
         read_only_fields = ['id']
+        extra_kwargs = {"phone": {"required": True, "allow_blank": False}}
+
+    def validate_phone(self, value):
+        value = value.replace(" ", "")
+        if not re.fullmatch(r"\+\d{8,15}", value):
+            raise serializers.ValidationError("Use international format, e.g. +251911223344.")
+        return value

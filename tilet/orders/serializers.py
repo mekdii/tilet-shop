@@ -2,6 +2,7 @@ from .models import Order, OrderItem
 from rest_framework import serializers
 from store.models import ProductVariant
 from accounts.models import Address
+from shipping.serializers import ShipmentSerializer
 
 
 
@@ -48,6 +49,17 @@ class CheckoutSerializer(serializers.Serializer):
         if len(ids) != len(set(ids)):
             raise serializers.ValidationError("Each variant may apear only once")
         return items
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only= True)
+    total = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
+    shipment = ShipmentSerializer(source="latest_shipment", read_only=True)
+
+    class Meta:
+        model = Order
+        fields = ["id", "address", "status", "created_at", "items", "total", "shipment"]
+        read_only_fields = ["id", "status", "created_at"]
     
 
 
