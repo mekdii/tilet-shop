@@ -11,6 +11,8 @@ class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="orders")
     address = models.ForeignKey("accounts.Address", on_delete=models.PROTECT, related_name = "orders")
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    currency=models.CharField(max_length=3, default="ETB")
+    shipping_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -25,8 +27,12 @@ class Order(models.Model):
         return shipments[0] if shipments else None
 
     @property
-    def total(self):
+    def subtotal(self):
         return sum(item.subtotal for item in self.items.all())
+
+    @property
+    def total(self):
+        return self.subtotal + self.shipping_fee
 
 
 class OrderItem(models.Model):

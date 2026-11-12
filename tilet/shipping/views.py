@@ -11,7 +11,14 @@ from .serializers import ReturnShipmentSerializer , ShipOrderSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from .services import mark_delivered, mark_returned , ship_order
-
+from decimal import Decimal
+from django.conf import settings
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from cart.models import CartItem
+from .rates import get_zone
+from .serializers import QuoteSerializer
 
 
 
@@ -68,3 +75,40 @@ class StaffOrderViewSet(viewsets.ReadOnlyModelViewSet):
         serializer.is_valid(raise_exception=True)
         mark_returned(order_id=pk, **serializer.validated_data)
         return self._respond(pk)
+
+
+class ShippingQuateView(APIView):
+    """Display only: the real fee is recomputed at checkout"""
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        serializer = QuoteSerializer(data=request.query_params, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        address = serializer.validated_data["address"]
+
+        items = list(
+            CartItem.objects.filter(cart__user= request.user).select_related("variant__product")
+
+        )
+        if not items:
+            raise ValidationError("your cart is empty")
+        zone = get_zone(address)
+        if zone is None:
+            raise ValidationError({"address": "we do not deliver to this address yet,"})
+
+        currency = zone.currency
+        subtotal = sum(
+        (currency.convert(i.variant.product.price) * i.quantity for i in items), Decimal("0")
+    )
+        weight = settings.PACKAGING_GRAMS + sum(
+            i.variant.product.weight_grams * i.quantity for i in items
+        )
+        fee = zone.fee_for(subtotal, weight)
+
+        return Response({
+            "currency": currency.code,
+            "subtotal": subtotal,
+            "shipping_fee": fee,
+            "total": subtotal + fee,
+            "estimate": zone.delivery_estimate,
+            "pay_with": "chapa" if currency.code == settings.BASE_CURRENCY else "stripe",
+        })

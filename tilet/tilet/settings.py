@@ -151,5 +151,8 @@ CHAPA_SECRET_KEY = os.environ.get("CHAPA_SECRET_KEY", "")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
-ETB_PER_USD = Decimal(os.environ.get("ETB_PER_USD", "150")) 
-CHAPA_FALLBACK_EMAIL_DOMAIN = "mekdesgenetu9797@gmail.com"    # put today's real rate
+
+CHAPA_FALLBACK_EMAIL_DOMAIN = "mekdesgenetu9797@gmail.com" 
+PACKAGING_GRAMS = 300 
+
+BASE_CURRENCY = 'ETB'

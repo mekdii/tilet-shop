@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Shipment
+from accounts.models import Address
 
 class ShipmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,4 +20,13 @@ class ReturnShipmentSerializer(serializers.Serializer):
 
     )
     reason = serializers.CharField(max_length=255 , required= False, allow_blank=True)
-    
+
+
+
+class QuoteSerializer(serializers.Serializer):
+    address = serializers.PrimaryKeyRelatedField(queryset=Address.objects.all())
+
+    def validate_address(self, address):
+        if address.user != self.context["request"].user:
+            raise serializers.ValidationError("Invalid address")
+        return address

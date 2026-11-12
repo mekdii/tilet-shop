@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import User
+from .models import User, Address
 
 
 @admin.register(User)
@@ -19,3 +19,9 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {"classes": ("wide",), "fields": ("phone", "password1", "password2")}),
     )
+
+
+@admin.register(Address)
+class ShipmentAdmin(admin.ModelAdmin):
+    list_display = ("user", "street", "apartment", "city", "country", "phone", "postal_code")
+   

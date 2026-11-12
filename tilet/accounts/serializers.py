@@ -29,3 +29,12 @@ class AddressSerializer(serializers.ModelSerializer):
         if not re.fullmatch(r"\+\d{8,15}", value):
             raise serializers.ValidationError("Use international format, e.g. +251911223344.")
         return value
+
+    def validate(self, attrs):
+        country = attrs.get("country", getattr(self.instance, "country", None))
+        postal = attrs.get("postal_code", getattr(self.instance, "postal_code", ""))
+        if country and str(country) != "ET" and not postal:
+            raise serializers.ValidationError(
+                {"postal_code": "A postal code is required for this country."}
+            )
+        return attrs

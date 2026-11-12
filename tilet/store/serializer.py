@@ -1,4 +1,4 @@
-from .models import Category, Ocassion, Color, Product, ProductVariant, ProductImage
+from .models import Category, Ocassion, Color, Product, ProductVariant, ProductImage, Currency
 from rest_framework import serializers
 
 
@@ -36,6 +36,12 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ["id", "image"]
 
 
+class CurrencySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Currency
+        fields= ["code", "name", "symbol", "decimals"]
+
+
 class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     ocasions = OcasionSerializer(many=True ,read_only=True)
@@ -43,10 +49,20 @@ class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     avg_rating = serializers.FloatField(read_only=True)
     review_count = serializers.IntegerField(read_only=True)
+    display_price = serializers.SerializerMethodField()
+    display_currency = serializers.SerializerMethodField()
     class Meta:
         model = Product
-        fields = ["id", "name" , "variants", "images", "description", "price" , "is_active", "category", "ocasions", "avg_rating", "review_count"]
+        fields = ["id", "name" , "variants", "images", "description", "price" , "is_active", "category", "ocasions", "avg_rating", "review_count", "display_price", "display_currency"]
         ordering_fields = ["price", "name", "id", "avg_rating"]
+
+    def get_display_price(self, obj):
+        currency  = self.context.get("currency")
+        return str(currency.convert(obj.price)) if currency else None
+
+    def get_display_currency(self, obj):
+        currency = self.context.get("currency")
+        return currency.code if currency else None
 
 
 

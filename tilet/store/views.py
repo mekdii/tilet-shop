@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .serializer import ProductSerializer, CategorySerializer, OcasionSerializer
-from .models import Product , Category, Ocassion
+from .serializer import ProductSerializer, CategorySerializer, OcasionSerializer, CurrencySerializer
+from .models import Product , Category, Ocassion, Currency
 from rest_framework.permissions import AllowAny
 from .pagination import ProductPagination
 from .filters import ProductFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from django.db.models import Avg, Count
-
+from django.conf import settings
 # Create your views here.
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
@@ -29,6 +29,15 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
             ).distinct()
         )
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        code = self.request.query_params.get("currency", settings.BASE_CURRENCY).upper()
+        context["currency"] = (
+            Currency.objects.filter(code=code).first()
+            or Currency.objects.filter(code=settings.BASE_CURRENCY).first()
+        )
+        return context
+
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     serializer_class = CategorySerializer
@@ -40,3 +49,10 @@ class OcasionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = OcasionSerializer
     queryset = Ocassion.objects.order_by("name")
 
+
+
+class CurrencyViewSet(viewsets.ReadOnlyModelViewSet):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+    serializer_class = CurrencySerializer
+    queryset = Currency.objects.order_by("code")

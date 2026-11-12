@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import RegexValidator
 from django.db import models
 from django.conf import settings
+from django_countries.fields import CountryField
 
 phone_validator = RegexValidator(
     r"^\+[1-9]\d{7,14}$",
@@ -47,7 +48,7 @@ class Address(models.Model):
     street = models.CharField(max_length=255)
     apartment = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=100)
-    country = models.CharField(max_length=100)
+    country = CountryField()
     phone = models.CharField(max_length=20, blank=True)
     postal_code = models.CharField(max_length=20, blank=True)
 
