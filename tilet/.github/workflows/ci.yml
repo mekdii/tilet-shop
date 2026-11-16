@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tilet
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: tilet
+          POSTGRES_USER: tilet
+          POSTGRES_PASSWORD: tilet
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U tilet"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      SECRET_KEY: ci-only-not-secret
+      DEBUG: "False"
+      POSTGRES_DB: tilet
+      POSTGRES_USER: tilet
+      POSTGRES_PASSWORD: tilet
+      POSTGRES_HOST: localhost
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: tilet/requirements.txt
+      - run: pip install -r requirements.txt ruff pip-audit
+      - run: ruff check . --select E9,F
+      - run: python manage.py check
+      - run: python manage.py makemigrations --check --dry-run
+      - run: python manage.py test
+      - run: pip-audit -r requirements.txt
