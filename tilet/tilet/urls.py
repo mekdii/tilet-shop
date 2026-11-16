@@ -18,6 +18,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.db import connection
+from django.http import JsonResponse
+
+
+def health(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.excute("SELECT 1")
+    except Exception:
+        return JsonResponse({"status": "database_error"}, status = 503)
+    return JsonResponse({"status": "ok"})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +39,7 @@ urlpatterns = [
     path("api/", include("cart.urls")),
     path("api/", include("payments.urls")),
     path("api/", include("shipping.urls")),
+    path("health/", health)
 
    
         
