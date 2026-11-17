@@ -25,9 +25,9 @@ from django.http import JsonResponse
 def health(request):
     try:
         with connection.cursor() as cursor:
-            cursor.excute("SELECT 1")
+            cursor.execute("SELECT 1")
     except Exception:
-        return JsonResponse({"status": "database_error"}, status = 503)
+        return JsonResponse({"status": "database_error"}, status=503)
     return JsonResponse({"status": "ok"})
 
 urlpatterns = [
