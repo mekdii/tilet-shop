@@ -1,5 +1,3 @@
-
-
 from pathlib import Path
 import environ
 import os
@@ -10,18 +8,20 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
-def env_bool(name , default=False):
+
+def env_bool(name, default=False):
     return os.environ.get(name, str(default)).lower() in ("1", "true", "yes")
 
+
 def env_list(name, default=""):
-    return [v.strip() for v in os.environ.get(name, default).split(",") if v.strip() ]
+    return [v.strip() for v in os.environ.get(name, default).split(",") if v.strip()]
 
 
 # env = environ.Env()
 # environ.Env.read_env(BASE_DIR.parent / ".env")
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-r3%o5_vx9fgvi9+0*20sm6*hfg6)^qb0l-d=sazoomot*0wd6@'
+SECRET_KEY = "django-insecure-r3%o5_vx9fgvi9+0*20sm6*hfg6)^qb0l-d=sazoomot*0wd6@"
 
 # SECRET_KEY = os.environ["SECRET_KEY"]
 
@@ -36,13 +36,13 @@ CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS")
 
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'accounts',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "accounts",
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "store",
@@ -52,39 +52,40 @@ INSTALLED_APPS = [
     "cart",
     "payments",
     "shipping",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware", 
-    'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware", 
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 INSTALLED_APPS += ["corsheaders"]
 
-ROOT_URLCONF = 'tilet.urls'
+ROOT_URLCONF = "tilet.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'tilet.wsgi.application'
+WSGI_APPLICATION = "tilet.wsgi.application"
 
 
 # Database
@@ -104,9 +105,18 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Tilet API",
+    "DESCRIPTION": "Backend API for Tilet Habesha Kemis e-commerce (Products, Cart, Delivery, Chapa & Stripe)",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
 }
 
 # Password validation
@@ -114,16 +124,16 @@ REST_FRAMEWORK = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -131,9 +141,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -143,9 +153,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-#------ static and media --------------
+# ------ static and media --------------
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -153,7 +163,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
-    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
 }
 if env_bool("USE_S3"):
     STORAGES["default"] = {
@@ -162,7 +174,7 @@ if env_bool("USE_S3"):
             "bucket_name": os.environ["AWS_STORAGE_BUCKET_NAME"],
             "region_name": os.environ["AWS_S3_REGION_NAME"],
             "location": "media",
-            "querystring_auth": False,      # public image URLs; the bucket policy allows reading media/
+            "querystring_auth": False,  # public image URLs; the bucket policy allows reading media/
             "file_overwrite": False,
         },
     }
@@ -173,7 +185,7 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = USE_HTTPS
     SESSION_COOKIE_SECURE = USE_HTTPS
     CSRF_COOKIE_SECURE = USE_HTTPS
-    SECURE_HSTS_SECONDS = 3600 if USE_HTTPS else 0      
+    SECURE_HSTS_SECONDS = 3600 if USE_HTTPS else 0
     SECURE_CONTENT_TYPE_NOSNIFF = True
 
 
@@ -189,7 +201,7 @@ LOGGING = {
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 AUTH_USER_MODEL = "accounts.User"
@@ -198,12 +210,10 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 
-
-
 CHAPA_SECRET_KEY = os.environ.get("CHAPA_SECRET_KEY", "")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
-CHAPA_FALLBACK_EMAIL_DOMAIN = "mekdesgenetu9797@gmail.com" 
-PACKAGING_GRAMS = 300 
-BASE_CURRENCY = 'ETB'
+CHAPA_FALLBACK_EMAIL_DOMAIN = "mekdesgenetu9797@gmail.com"
+PACKAGING_GRAMS = 300
+BASE_CURRENCY = "ETB"
